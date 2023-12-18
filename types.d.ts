@@ -1,6 +1,6 @@
 export interface TarHeader {
     name: string;
-    mode: FileMode;
+    mode: number;
     uid: number;
     gid: number;
     size: number;
@@ -15,24 +15,3 @@ export interface TarHeader {
     devminor: number;
     prefix: string;
 }
-
-export interface FileMode {
-    user: {
-        read: boolean;
-        write: boolean;
-        execute: boolean;
-    }
-    group: {
-        read: boolean;
-        write: boolean;
-        execute: boolean;
-    }
-    others: {
-        read: boolean;
-        write: boolean;
-        execute: boolean;
-    },
-    setuid: boolean;
-    setgid: boolean;
-    sticky: boolean;
-};
