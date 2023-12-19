@@ -9,6 +9,41 @@
         #entries = [];
 
         /**
+         * 
+         * @param {string} path
+         * @param {File} file
+         * @param {import("./types").TarFileOptions} [options]
+         */
+        addFile(path, file, options) {
+            if (path.endsWith("/")) {
+                path = path.substring(0, path.length - 1);
+            }
+
+            const sepIndex = path.lastIndexOf("/");
+
+            const header = tarHeader(
+                path.substring(sepIndex + 1),
+                options?.mode ?? 0o644,
+                options?.uid ?? 0,
+                options?.gid ?? 0,
+                file.size,
+                file.lastModified,
+                -1,
+                0,
+                "",
+                0,
+                options?.uname ?? "",
+                options?.gname ?? "",
+                0,
+                0,
+                path.substring(0, sepIndex + 1)
+            );
+
+            this.#indexMap.set(path, this.#entries.length);
+            this.#entries.push({ header, content: file });
+        }
+
+        /**
          * @param {File} file
          */
         static async fromFile(file) {

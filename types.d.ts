@@ -24,3 +24,11 @@ export interface TarHeader {
     devminor: number;
     prefix: string;
 }
+
+export interface TarFileOptions {
+    mode?: number;
+    uid?: number;
+    gid?: number;
+    uname?: string;
+    gname?: string;
+}
