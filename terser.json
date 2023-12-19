@@ -1,0 +1,13 @@
+{
+    "module": false,
+    "toplevel": true,
+    "ecma": 2022,
+    "mangle": {
+        "properties": {
+            "keep_quoted": "strict"
+        }
+    },
+    "compress": {
+        "unsafe": true
+    }
+}
