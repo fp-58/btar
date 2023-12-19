@@ -181,4 +181,30 @@
     function isZeroed(bytes) {
         return bytes.every(v => v === 0);
     }
+
+    // @ts-ignore
+    if (typeof define === "function" && define.amd) {
+        // @ts-ignore
+        define(function() {
+            return {
+                TarArchive
+            }
+        });
+    }
+    else if (typeof module === "object" && module) {
+        // @ts-ignore
+        module.exports = { TarArchive };
+    }
+    else if (typeof exports === "object" && exports) {
+        // @ts-ignore
+        exports.TarArchive = TarArchive;
+    }
+    else if (typeof window === "object" && window) {
+        // @ts-ignore
+        window.TarArchive = TarArchive;
+    }
+    else {
+        // @ts-ignore
+        globalThis.TarArchive = TarArchive;
+    }
 })()
