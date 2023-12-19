@@ -1,3 +1,12 @@
+export class TarArchive {
+    static fromFile(file: File): Promise<TarArchive>;
+}
+
+export interface TarEntry {
+    header: TarHeader;
+    content?: File;
+}
+
 export interface TarHeader {
     name: string;
     mode: number;
