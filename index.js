@@ -175,6 +175,77 @@
         };
     }
 
+    /**
+     * @param {import("./types").TarHeader} header
+     * @param {Uint8Array} output
+     * @param {number} [offset]
+     */
+    function writeHeader(header, output, offset = 0) {
+        output = output.subarray(offset, offset + 500);
+        writeString     (header.name,           output, 0x000, 100);
+        writeOctal      (header.mode,           output, 0x064, 8);
+        writeOctal      (header.uid,            output, 0x06c, 8);
+        writeOctal      (header.gid,            output, 0x074, 8);
+        writeOctal      (header.size,           output, 0x07c, 12);
+        writeOctal      (header.lastModified,   output, 0x088, 12);
+        writeOctal      (header.checksum,       output, 0x094, 8);
+        writeOctal      (header.typeflag,       output, 0x09c, 1);
+        writeString     (header.linkname,       output, 0x09d, 100);
+        writeOctal      (header.version,        output, 0x107, 3);
+        writeString     (header.uname,          output, 0x109, 32);
+        writeString     (header.gname,          output, 0x129, 32);
+        if (header.devmajor === -1) {
+            output.fill(0x00, 0x149, 0x149 + 8);
+        }
+        else {
+            writeOctal  (header.devmajor,       output, 0x149, 8);
+        }
+        if (header.devminor === -1) {
+            output.fill(0x00, 0x151, 0x151 + 8);
+        }
+        else {
+            writeOctal  (header.devminor,       output, 0x151, 8);
+        }
+        writeString     (header.prefix,         output, 0x159, 155);
+    }
+
+    /**
+     * Writes a null-terminated string to a Uint8Array.
+     * @param {string} value
+     * @param {Uint8Array} output
+     * @param {number} [offset]
+     * @param {number} [length]
+     */
+    function writeString(value, output, offset = 0, length = output.length - offset) {
+        output = output.subarray(offset, offset + length);
+        const written = new TextEncoder().encodeInto(value, output).written;
+        if (written < length) {
+            output[written] = 0x00;
+        }
+    }
+
+    /**
+     * Writes a null-terminated octal string to a Uint8Array.
+     * @param {number} value
+     * @param {Uint8Array} output
+     * @param {number} [offset]
+     * @param {number} [length]
+     */
+    function writeOctal(value, output, offset = 0, length = output.length - offset) {
+        const octalLength = Math.ceil(Math.log2(value) / 3);
+
+        if (octalLength < length) {
+            length--;
+            output[offset + length] = 0x00;
+        }
+
+        for (let i = length - 1; i >= offset; i--) {
+            const charcode = 0x30 + (value & 7);
+            value >>= 3;
+            output[i] = charcode;
+        }
+    }
+
     /** @implements {File} */
     class ArchivedFile extends File {
         #relativePath;
