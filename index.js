@@ -189,24 +189,24 @@
         // @ts-ignore
         define(function() {
             return {
-                TarArchive
+                "TarArchive": TarArchive
             }
         });
     }
     else if (typeof module === "object" && module) {
         // @ts-ignore
-        module.exports = { TarArchive };
+        module.exports["TarArchive"] = TarArchive;
     }
     else if (typeof exports === "object" && exports) {
         // @ts-ignore
-        exports.TarArchive = TarArchive;
+        exports["TarArchive"] = TarArchive;
     }
     else if (typeof window === "object" && window) {
         // @ts-ignore
-        window.TarArchive = TarArchive;
+        window["TarArchive"] = TarArchive;
     }
     else {
         // @ts-ignore
-        globalThis.TarArchive = TarArchive;
+        globalThis["TarArchive"] = TarArchive;
     }
 })()
