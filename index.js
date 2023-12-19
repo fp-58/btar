@@ -63,23 +63,23 @@
                     }
                 }
 
-                return {
-                    name:           decodeString(headerBlock, 0x000, 100),
-                    mode:           decodeOctal (headerBlock, 0x064, 8),
-                    uid:            decodeOctal (headerBlock, 0x06c, 8),
-                    gid:            decodeOctal (headerBlock, 0x074, 8),
-                    size:           decodeOctal (headerBlock, 0x07c, 12),
-                    lastModified:   decodeOctal (headerBlock, 0x088, 12),
-                    checksum:       decodeOctal (headerBlock, 0x094, 8),
-                    typeflag:       decodeOctal (headerBlock, 0x09c, 1),
-                    linkname:       decodeString(headerBlock, 0x09d, 100),
-                    version:        decodeOctal (headerBlock, 0x107, 3),
-                    uname:          decodeString(headerBlock, 0x109, 32),
-                    gname:          decodeString(headerBlock, 0x129, 32),
-                    devmajor:       decodeOctal (headerBlock, 0x149, 8),
-                    devminor:       decodeOctal (headerBlock, 0x151, 8),
-                    prefix:         decodeString(headerBlock, 0x159, 155)
-                };
+                return tarHeader(
+                    decodeString(headerBlock, 0x000, 100),  // name
+                    decodeOctal (headerBlock, 0x064, 8),    // mode
+                    decodeOctal (headerBlock, 0x06c, 8),    // uid
+                    decodeOctal (headerBlock, 0x074, 8),    // gid
+                    decodeOctal (headerBlock, 0x07c, 12),   // size
+                    decodeOctal (headerBlock, 0x088, 12),   // lastModified
+                    decodeOctal (headerBlock, 0x094, 8),    // checksum
+                    decodeOctal (headerBlock, 0x09c, 1),    // typeflag
+                    decodeString(headerBlock, 0x09d, 100),  // linkname
+                    decodeOctal (headerBlock, 0x107, 3),    // version
+                    decodeString(headerBlock, 0x109, 32),   // uname
+                    decodeString(headerBlock, 0x129, 32),   // gname
+                    decodeOctal (headerBlock, 0x149, 8),    // devmajor
+                    decodeOctal (headerBlock, 0x151, 8),    // devminor
+                    decodeString(headerBlock, 0x159, 155)   // prefix
+                );
             }
 
             async function peekBlock() {
@@ -109,6 +109,35 @@
                 return block;
             }
         }
+    }
+
+    /**
+     * @param {string} name
+     * @param {number} mode
+     * @param {number} uid
+     * @param {number} gid
+     * @param {number} size
+     * @param {number} lastModified
+     * @param {number} checksum
+     * @param {number} typeflag
+     * @param {string} linkname
+     * @param {number} version
+     * @param {string} uname
+     * @param {string} gname
+     * @param {number} devmajor
+     * @param {number} devminor
+     * @param {string} prefix
+     * @returns {import("./types").TarHeader}
+     */
+    function tarHeader(
+        name, mode, uid, gid, size, lastModified, checksum, typeflag, linkname,
+        version, uname, gname, devmajor, devminor, prefix
+    ) {
+
+        return {
+            name, mode, uid, gid, size, lastModified, checksum, typeflag,
+            linkname, version, uname, gname, devmajor, devminor, prefix
+        };
     }
 
     /** @implements {File} */
