@@ -11,9 +11,11 @@
         /**
          * @param {File} file
          */
-        async fromFile(file) {
+        static async fromFile(file) {
             const blockSize = 512;
             let blockIndex = 0;
+            
+            const result = new TarArchive();
 
             for (
                 let header = await readHeader(); header;
@@ -42,9 +44,9 @@
                     endings: "transparent"
                 });
 
-                this.#indexMap.set(fullpath, this.#entries.length);
+                result.#indexMap.set(fullpath, result.#entries.length);
 
-                this.#entries.push({ header, content });
+                result.#entries.push({ header, content });
                 blockIndex += Math.ceil(header.size / blockSize);
             }
 
