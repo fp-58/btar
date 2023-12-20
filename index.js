@@ -205,7 +205,6 @@
 
         if (checksum === -1) {
             const bytes = new Uint8Array(500);
-            header.checksum = 0;
             writeHeader(header, bytes);
 
             // Up to 7 octal numbers, 3 bits per number.
@@ -294,8 +293,15 @@
      */
     function generateChecksum(bytes, precision) {
         const mask = (2 << precision) - 1;
+        const chksumStart = 0x094;
+        const chksumEnd =   0x09c;
+
         let value = 0;
-        for (const byte of bytes) {
+        for (let i = 0; i < bytes.length; i++) {
+            let byte = bytes[i];
+            if (chksumStart <= i && i <= chksumEnd) {
+                byte = 0x20;
+            }
             value = (value + byte) & mask;
         }
         return value;
