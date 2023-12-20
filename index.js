@@ -51,7 +51,7 @@
          * @param {string} target
          * @param {import("./types").TarLinkOptions} [options]
          */
-        #addTypedLink(type, path, target, options) {
+        #addLink(type, path, target, options) {
             let sepIndex = path.lastIndexOf("/");
             if (sepIndex === path.length - 1) {
                 sepIndex = path.substring(0, sepIndex).lastIndexOf("/");
@@ -86,8 +86,8 @@
          * @param {string} target
          * @param {import("./types").TarLinkOptions} [options]
          */
-        addLink(path, target, options) {
-            this.#addTypedLink(1, path, target, options);
+        addHardlink(path, target, options) {
+            this.#addLink(1, path, target, options);
         }
 
         /**
@@ -97,7 +97,7 @@
          * @param {import("./types").TarLinkOptions} options
          */
         addSymlink(path, target, options) {
-            this.#addTypedLink(2, path, target, options);
+            this.#addLink(2, path, target, options);
         }
 
         /**
