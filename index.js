@@ -181,6 +181,32 @@
             }
         }
 
+        /** Removes overwritten entries from the tar archive. */
+        trim() {
+            /** @type {Set<string>} */
+            let entrySet = new Set();
+
+            for (let i = this.#entries.length - 1; i >= 0; i--) {
+                const entry = this.#entries[i];
+                const path = entry.header.prefix + entry.header.name;
+
+                if (!entrySet.has(path)) {
+                    entrySet.add(path);
+                }
+                else {
+                    this.#entries.splice(i, 1);
+                    i++;
+                }
+            }
+            
+            /** @type {[string, number][]} */
+            const indexedEntries = this.#entries.map((v, i) => {
+                return [v.header.prefix + v.header.name, i];
+            });
+
+            this.#indexMap = new Map(indexedEntries);
+        }
+
         toBlob() {
             /** @type {BlobPart[]} */
             const parts = [];
