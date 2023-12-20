@@ -349,6 +349,7 @@
         writeOctal      (header.checksum,       output, 0x094, 8);
         writeOctal      (header.typeflag,       output, 0x09c, 1);
         writeString     (header.linkname,       output, 0x09d, 100);
+        writeString     ("ustar",               output, 0x101, 6);
         writeOctal      (header.version,        output, 0x107, 3);
         writeString     (header.uname,          output, 0x109, 32);
         writeString     (header.gname,          output, 0x129, 32);
