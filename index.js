@@ -46,11 +46,12 @@
 
         /**
          * 
+         * @param {number} type
          * @param {string} path
          * @param {string} target
          * @param {import("./types").TarLinkOptions} [options]
          */
-        addLink(path, target, options) {
+        #addTypedLink(type, path, target, options) {
             let sepIndex = path.lastIndexOf("/");
             if (sepIndex === path.length - 1) {
                 sepIndex = path.substring(0, sepIndex).lastIndexOf("/");
@@ -64,7 +65,7 @@
                 0,
                 options?.lastModified ?? Date.now(),
                 -1,
-                1,
+                type,
                 target,
                 0,
                 options?.uname ?? "",
@@ -76,6 +77,27 @@
 
             this.#indexMap.set(path, this.#entries.length);
             this.#entries.push({ header });
+            
+        }
+
+        /**
+         * 
+         * @param {string} path
+         * @param {string} target
+         * @param {import("./types").TarLinkOptions} [options]
+         */
+        addLink(path, target, options) {
+            this.#addTypedLink(1, path, target, options);
+        }
+
+        /**
+         * 
+         * @param {string} path
+         * @param {string} target
+         * @param {import("./types").TarLinkOptions} options
+         */
+        addSymlink(path, target, options) {
+            this.#addTypedLink(2, path, target, options);
         }
 
         /**
