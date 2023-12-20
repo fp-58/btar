@@ -144,6 +144,36 @@
                 return block;
             }
         }
+
+        toBlob() {
+            /** @type {BlobPart[]} */
+            const parts = [];
+
+            for (const entry of this.#entries) {
+                const headerBlock = new Uint8Array(512);
+                writeHeader(entry.header, headerBlock);
+                parts.push(headerBlock);
+
+                if (entry.content) {
+                    parts.push(entry.content);
+
+                    let overflow = entry.content.size % 512;
+                    if (overflow > 0) {
+                        const paddingSize = 512 - overflow;
+                        const padding = new ArrayBuffer(paddingSize);
+                        parts.push(padding);
+                    }
+                }
+            }
+
+            const endOfArchive = new ArrayBuffer(1024);
+            parts.push(endOfArchive);
+
+            return new Blob(parts, {
+                endings: "transparent",
+                type: "application/x-tar"
+            });
+        }
     }
 
     /**
