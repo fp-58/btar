@@ -168,11 +168,22 @@
         name, mode, uid, gid, size, lastModified, checksum, typeflag, linkname,
         version, uname, gname, devmajor, devminor, prefix
     ) {
-
-        return {
+        const header = {
             name, mode, uid, gid, size, lastModified, checksum, typeflag,
             linkname, version, uname, gname, devmajor, devminor, prefix
         };
+
+        if (checksum === -1) {
+            const bytes = new Uint8Array(500);
+            header.checksum = 0;
+            writeHeader(header, bytes);
+
+            // Up to 7 octal numbers, 3 bits per number.
+            const precision = 7 * 3;
+            header.checksum = generateChecksum(bytes, precision);
+        }
+
+        return header;
     }
 
     /**
@@ -244,6 +255,20 @@
             value >>= 3;
             output[i] = charcode;
         }
+    }
+
+    /**
+     * Generate a checksum of an array of bytes with a given precision.
+     * @param {Uint8Array} bytes
+     * @param {number} precision
+     */
+    function generateChecksum(bytes, precision) {
+        const mask = (2 << precision) - 1;
+        let value = 0;
+        for (const byte of bytes) {
+            value = (value + byte) & mask;
+        }
+        return value;
     }
 
     /** @implements {File} */
