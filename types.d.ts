@@ -25,10 +25,16 @@ export interface TarHeader {
     prefix: string;
 }
 
-export interface TarFileOptions {
+export interface TarPermissionOptions {
     mode?: number;
     uid?: number;
     gid?: number;
     uname?: string;
     gname?: string;
+}
+
+export interface TarFileOptions extends TarPermissionOptions {}
+
+export interface TarDirectoryOptions extends TarPermissionOptions {
+    lastModified: number;
 }

@@ -45,6 +45,42 @@
         }
 
         /**
+         * 
+         * @param {string} path
+         * @param {import("./types").TarDirectoryOptions} [options]
+         */
+        addDir(path, options) {
+            let sepIndex = path.lastIndexOf("/")
+            if (sepIndex === path.length - 1) {
+                sepIndex = path.substring(0, sepIndex).lastIndexOf("/");
+            }
+            else {
+                path += "/";
+            }
+
+            const header = tarHeader(
+                path.substring(sepIndex + 1),
+                options?.mode ?? 0o775,
+                options?.uid ?? 0,
+                options?.gid ?? 0,
+                0,
+                options?.lastModified ?? Date.now(),
+                -1,
+                5,
+                "",
+                0,
+                options?.uname ?? "",
+                options?.gname ?? "",
+                0,
+                0,
+                path.substring(0, sepIndex + 1)
+            );
+
+            this.#indexMap.set(path, this.#entries.length);
+            this.#entries.push({ header });
+        }
+
+        /**
          * @param {File} file
          */
         static async fromFile(file) {
