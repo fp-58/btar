@@ -1,4 +1,5 @@
 (() => {
+    const blockSize = 512;
     class TarArchive {
         /**
          * A map of file paths to entry indicies.
@@ -47,7 +48,6 @@
          * @param {File} file
          */
         static async fromFile(file) {
-            const blockSize = 512;
             let blockIndex = 0;
             
             const result = new TarArchive();
@@ -121,10 +121,10 @@
                 let start = blockIndex * blockIndex;
                 let end = start + blockSize;
                 if (file.size < start) {
-                    return new Uint8Array(512);
+                    return new Uint8Array(blockSize);
                 }
                 else if (file.size < end) {
-                    const block = new Uint8Array(512);
+                    const block = new Uint8Array(blockSize);
                     const slice = file.slice(start);
                     const data = new Uint8Array(await slice.arrayBuffer());
                     block.set(data);
@@ -138,7 +138,7 @@
 
             async function nextBlock() {
                 const block = await peekBlock();
-                if (file.size - blockIndex * blockSize > -512) {
+                if (file.size - blockIndex * blockSize > -blockSize) {
                     blockIndex++;
                 }
                 return block;
@@ -150,23 +150,23 @@
             const parts = [];
 
             for (const entry of this.#entries) {
-                const headerBlock = new Uint8Array(512);
+                const headerBlock = new Uint8Array(blockSize);
                 writeHeader(entry.header, headerBlock);
                 parts.push(headerBlock);
 
                 if (entry.content) {
                     parts.push(entry.content);
 
-                    let overflow = entry.content.size % 512;
+                    let overflow = entry.content.size % blockSize;
                     if (overflow > 0) {
-                        const paddingSize = 512 - overflow;
+                        const paddingSize = blockSize - overflow;
                         const padding = new ArrayBuffer(paddingSize);
                         parts.push(padding);
                     }
                 }
             }
 
-            const endOfArchive = new ArrayBuffer(1024);
+            const endOfArchive = new ArrayBuffer(2 * blockSize);
             parts.push(endOfArchive);
 
             return new Blob(parts, {
