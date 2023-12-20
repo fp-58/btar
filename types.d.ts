@@ -35,6 +35,10 @@ export interface TarPermissionOptions {
 
 export interface TarFileOptions extends TarPermissionOptions {}
 
-export interface TarDirectoryOptions extends TarPermissionOptions {
-    lastModified: number;
+export interface TarDatedOptions extends TarPermissionOptions {
+    lastModified?: number;
 }
+
+export interface TarDirectoryOptions extends TarDatedOptions {}
+
+export interface TarLinkOptions extends TarDatedOptions {}
