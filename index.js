@@ -1,5 +1,15 @@
 (() => {
     const blockSize = 512;
+
+    // Type flags
+    const FILE_TYPE = 0;
+    const LINK_TYPE = 1;
+    const SYMLINK_TYPE = 2;
+    const CHARDEV_TYPE = 3;
+    const BLOCKDEV_TYPE = 4;
+    const DIR_TYPE = 5;
+    const FIFO_TYPE = 6;
+
     class TarArchive {
         /**
          * A map of file paths to entry indicies.
@@ -28,7 +38,7 @@
                 file.size,
                 file.lastModified,
                 undefined,
-                0,
+                FILE_TYPE,
                 "",
                 0,
                 options?.uname ?? "",
@@ -44,7 +54,7 @@
 
         /**
          * Appends a link with a given type.
-         * @param {number} type
+         * @param {typeof LINK_TYPE | typeof SYMLINK_TYPE} type
          * @param {string} path
          * @param {string} target
          * @param {import("./types").TarLinkOptions} [options]
@@ -89,7 +99,7 @@
          * @param {import("./types").TarLinkOptions} [options]
          */
         addHardlink(path, target, options) {
-            this.#addLink(1, path, target, options);
+            this.#addLink(LINK_TYPE, path, target, options);
         }
 
         /**
@@ -100,7 +110,7 @@
          * @param {import("./types").TarLinkOptions} options
          */
         addSymlink(path, target, options) {
-            this.#addLink(2, path, target, options);
+            this.#addLink(SYMLINK_TYPE, path, target, options);
         }
 
         /**
@@ -120,7 +130,7 @@
                 0,
                 options?.lastModified ?? Date.now(),
                 undefined,
-                5,
+                DIR_TYPE,
                 "",
                 0,
                 options?.uname ?? "",
@@ -136,7 +146,7 @@
 
         /**
          * 
-         * @param {number} type
+         * @param {typeof CHARDEV_TYPE | typeof BLOCKDEV_TYPE} type
          * @param {string} path
          * @param {number} majorId
          * @param {number} minorId
@@ -177,7 +187,7 @@
          * @param {import("./types").TarDeviceOptions} [options]
          */
         addCharDevice(path, majorId, minorId, options) {
-            this.#addDevice(3, path, majorId, minorId, options)
+            this.#addDevice(CHARDEV_TYPE, path, majorId, minorId, options)
         }
 
         /**
@@ -189,7 +199,7 @@
          * @param {import("./types").TarDeviceOptions} [options]
          */
         addBlockDevice(path, majorId, minorId, options) {
-            this.#addDevice(4, path, majorId, minorId, options);
+            this.#addDevice(BLOCKDEV_TYPE, path, majorId, minorId, options);
         }
 
         get length() {
