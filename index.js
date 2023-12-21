@@ -190,6 +190,26 @@
         }
 
         /**
+         * 
+         * @param {number} index
+         * @returns {import("./types").TarEntry | undefined}
+         */
+        entryAt(index) {
+            const entry = this.#entries[index];
+            if (!entry) {
+                return undefined;
+            }
+
+            const header = Object.assign({}, entry.header);
+            if (entry.content) {
+                return { header, content: entry.content };
+            }
+            else {
+                return { header };
+            }
+        }
+
+        /**
          * @param {File} file
          */
         static async fromFile(file) {
