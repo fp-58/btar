@@ -42,3 +42,5 @@ export interface TarDatedOptions extends TarPermissionOptions {
 export interface TarDirectoryOptions extends TarDatedOptions {}
 
 export interface TarLinkOptions extends TarDatedOptions {}
+
+export interface TarDeviceOptions extends TarDatedOptions {}

@@ -134,6 +134,62 @@
         }
 
         /**
+         * 
+         * @param {number} type
+         * @param {string} path
+         * @param {number} majorId
+         * @param {number} minorId
+         * @param {import("./types").TarDeviceOptions} [options]
+         */
+        #addDevice(type, path, majorId, minorId, options) {
+            path = trimPath(path);
+            let sepIndex = path.lastIndexOf("/") + 1;
+
+            const header = tarHeader(
+                path.substring(sepIndex),
+                options?._mode ?? 0o644,
+                options?._uid ?? 0,
+                options?._gid ?? 0,
+                0,
+                options?._lastModified ?? Date.now(),
+                undefined,
+                type,
+                "",
+                0,
+                options?._uname ?? "",
+                options?._gname ?? "",
+                majorId,
+                minorId,
+                path.substring(0, sepIndex)
+            );
+
+            this.#indexMap.set(path, this.#entries.length);
+            this.#entries.push({ header });
+        }
+
+        /**
+         * 
+         * @param {string} path
+         * @param {number} majorId
+         * @param {number} minorId
+         * @param {import("./types").TarDeviceOptions} [options]
+         */
+        addCharDevice(path, majorId, minorId, options) {
+            this.#addDevice(3, path, majorId, minorId, options)
+        }
+
+        /**
+         * 
+         * @param {string} path
+         * @param {number} majorId
+         * @param {number} minorId
+         * @param {import("./types").TarDeviceOptions} [options]
+         */
+        addBlockDevice(path, majorId, minorId, options) {
+            this.#addDevice(4, path, majorId, minorId, options);
+        }
+
+        /**
          * @param {File} file
          */
         static async fromFile(file) {
