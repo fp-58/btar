@@ -242,6 +242,24 @@
         }
 
         /**
+         * Removes an entry from the archive.
+         * @param {number} index
+         */
+        removeAt(index) {
+            if (index < 0 || this.#entries.length <= index) {
+                return;
+            }
+
+            this.#entries.splice(index, 1);
+            for (const [path, i] of this.#indexMap) {
+                if (i < index)
+                    continue;
+
+                this.#indexMap.set(path, i - 1);
+            }
+        }
+
+        /**
          * @param {File} file
          */
         static async fromFile(file) {
