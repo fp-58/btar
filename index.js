@@ -17,11 +17,10 @@
          */
         addFile(path, file, options) {
             path = trimPath(path);
-
-            const sepIndex = path.lastIndexOf("/");
+            const filename = splitFilename(path);
 
             const header = tarHeader(
-                path.substring(sepIndex + 1),
+                filename._name,
                 options?._mode ?? 0o644,
                 options?._uid ?? 0,
                 options?._gid ?? 0,
@@ -35,7 +34,7 @@
                 options?._gname ?? "",
                 0,
                 0,
-                path.substring(0, sepIndex + 1)
+                filename._prefix
             );
 
             this.#indexMap.set(path, this.#entries.length);
@@ -51,7 +50,7 @@
          */
         #addLink(type, path, target, options) {
             path = trimPath(path);
-            let sepIndex = path.lastIndexOf("/");
+            const filename = splitFilename(path);
 
             let trailingSep = target.endsWith("/");
             target = trimPath(path);
@@ -60,7 +59,7 @@
             }
 
             const header = tarHeader(
-                path.substring(sepIndex + 1),
+                filename._name,
                 options?._mode ?? 0o644,
                 options?._uid ?? 0,
                 options?._gid ?? 0,
@@ -74,7 +73,7 @@
                 options?._gname ?? "",
                 0,
                 0,
-                path.substring(0, sepIndex + 1)
+                filename._prefix
             );
 
             this.#indexMap.set(path, this.#entries.length);
@@ -107,12 +106,11 @@
          * @param {import("./types").TarDirectoryOptions} [options]
          */
         addDir(path, options) {
-            path = trimPath(path);
-            let sepIndex = path.lastIndexOf("/");
-            path += "/";
+            path = trimPath(path) + "/";
+            const filename = splitFilename(path);
 
             const header = tarHeader(
-                path.substring(sepIndex + 1),
+                filename._name,
                 options?._mode ?? 0o775,
                 options?._uid ?? 0,
                 options?._gid ?? 0,
@@ -126,7 +124,7 @@
                 options?._gname ?? "",
                 0,
                 0,
-                path.substring(0, sepIndex + 1)
+                filename._prefix
             );
 
             this.#indexMap.set(path, this.#entries.length);
@@ -143,10 +141,10 @@
          */
         #addDevice(type, path, majorId, minorId, options) {
             path = trimPath(path);
-            let sepIndex = path.lastIndexOf("/") + 1;
+            const filename = splitFilename(path);
 
             const header = tarHeader(
-                path.substring(sepIndex),
+                filename._name,
                 options?._mode ?? 0o644,
                 options?._uid ?? 0,
                 options?._gid ?? 0,
@@ -160,7 +158,7 @@
                 options?._gname ?? "",
                 majorId,
                 minorId,
-                path.substring(0, sepIndex)
+                filename._prefix
             );
 
             this.#indexMap.set(path, this.#entries.length);
@@ -383,6 +381,25 @@
         }
 
         return path.substring(start, end);
+    }
+
+    /**
+     * 
+     * @param {string} path
+     */
+    function splitFilename(path) {
+        if (path.length > 255) {
+            throw new Error(`Path is too long: ${path.length} > 255`);
+        }
+
+        let _name = path;
+        let _prefix = "";
+        if (path.length > 100) {
+            let sepIndex = path.length - 100;
+            _name = path.substring(sepIndex);
+            _prefix = path.substring(0, sepIndex);
+        }
+        return { _name, _prefix };
     }
 
     /**
