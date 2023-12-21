@@ -202,6 +202,37 @@
             this.#addDevice(BLOCKDEV_TYPE, path, majorId, minorId, options);
         }
 
+        /**
+         * Appends an FIFO (named pipe) entry to the end of the archive.
+         * @param {string} path The path of the FIFO.
+         * @param {import("./types").TarFIFOOptions} [options]
+         */
+        addFIFO(path, options) {
+            path = normalizePath(path);
+            const filename = splitFilename(path);
+
+            const header = tarHeader(
+                filename._name,
+                options?.mode ?? 0o644,
+                options?.uid ?? 0,
+                options?.gid ?? 0,
+                0,
+                options?.lastModified ?? Date.now(),
+                undefined,
+                FIFO_TYPE,
+                "",
+                0,
+                options?.uname ?? "",
+                options?.gname ?? "",
+                undefined,
+                undefined,
+                filename._prefix
+            );
+
+            this.#indexMap.set(path, this.#entries.length);
+            this.#entries.push({ header });
+        }
+
         get length() {
             return this.#entries.length;
         }
