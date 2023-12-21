@@ -242,7 +242,7 @@
         }
 
         /**
-         * Removes an entry from the archive.
+         * Removes an entry from the archive by index.
          * @param {number} index
          */
         removeAt(index) {
@@ -256,6 +256,24 @@
                     continue;
 
                 this.#indexMap.set(path, i - 1);
+            }
+        }
+
+        /**
+         * Removes an entry from the archive by path.
+         * @param {string} path The path of the entry to remove.
+         */
+        removeEntry(path) {
+            for (
+                let i = this.#indexMap.get(path) ?? (this.#entries.length - 1);
+                i >= 0; i--
+            ) {
+                const entry = this.#entries[i];
+                const fullpath = entry.header.prefix + entry.header.name;
+
+                if (fullpath === path) {
+                    this.removeAt(i);
+                }
             }
         }
 
