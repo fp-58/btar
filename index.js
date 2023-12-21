@@ -632,29 +632,27 @@
         return bytes.every(v => v === 0);
     }
 
+    const _exports = { TarArchive };
+
     // @ts-ignore
     if (typeof define === "function" && define.amd) {
         // @ts-ignore
         define(function() {
-            return {
-                "TarArchive": TarArchive
-            }
+            return _exports;
         });
     }
     else if (typeof module === "object" && module) {
-        // @ts-ignore
-        module.exports["TarArchive"] = TarArchive;
+        module.exports = _exports;
     }
     else if (typeof exports === "object" && exports) {
-        // @ts-ignore
-        exports["TarArchive"] = TarArchive;
+        exports.TarArchive = TarArchive;
     }
     else if (typeof window === "object" && window) {
         // @ts-ignore
-        window["TarArchive"] = TarArchive;
+        window.btar = _exports;
     }
     else {
         // @ts-ignore
-        globalThis["TarArchive"] = TarArchive;
+        globalThis.btar = _exports;
     }
 })()
