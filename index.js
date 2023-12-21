@@ -196,6 +196,20 @@
             return this.#entries.length;
         }
 
+        [Symbol.iterator]() {
+            return this.entries();
+        }
+
+        /**
+         * Returns an iterable of archived entries.
+         * @returns {IterableIterator<import("./types").TarEntry>}
+         */
+        *entries() {
+            for (let i = 0; i < this.#entries.length; i++) {
+                yield this.entryAt(i);
+            }
+        }
+
         /**
          * Returns the archived entry at a given index.
          * @param {number} index The index of the entry.
