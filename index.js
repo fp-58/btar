@@ -208,6 +208,30 @@
         }
 
         /**
+         * 
+         * @param {string} path
+         * @returns {number}
+         */
+        indexOf(path) {
+            let mappedIndex = this.#indexMap.get(path);
+            if (mappedIndex === undefined) {
+                for (let i = this.#entries.length - 1; i >= 0; i--) {
+                    const entry = this.#entries[i];
+                    const fullpath = entry.header.prefix + entry.header.name;
+
+                    if (fullpath === path) {
+                        this.#indexMap.set(path, i);
+                        return i;
+                    }
+                }
+                return -1;
+            }
+            else {
+                return mappedIndex;
+            }
+        }
+
+        /**
          * @param {File} file
          */
         static async fromFile(file) {
