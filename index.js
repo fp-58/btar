@@ -33,8 +33,8 @@
                 0,
                 options?.uname ?? "",
                 options?.gname ?? "",
-                0,
-                0,
+                undefined,
+                undefined,
                 filename._prefix
             );
 
@@ -72,8 +72,8 @@
                 0,
                 options?.uname ?? "",
                 options?.gname ?? "",
-                0,
-                0,
+                undefined,
+                undefined,
                 filename._prefix
             );
 
@@ -125,8 +125,8 @@
                 0,
                 options?.uname ?? "",
                 options?.gname ?? "",
-                0,
-                0,
+                undefined,
+                undefined,
                 filename._prefix
             );
 
@@ -308,6 +308,9 @@
                 let end = start + header.size;
                 if (file.size < end) {
                     throw new Error(`Malformed archive: Expected size ${end}, got size ${file.size}`);
+                }
+                if (header.typeflag !== 6) {
+                    header.devmajor = header.devminor = undefined;
                 }
 
                 let fullpath = header.prefix + header.name;
@@ -503,8 +506,8 @@
      * @param {number} version
      * @param {string} uname
      * @param {string} gname
-     * @param {number} devmajor
-     * @param {number} devminor
+     * @param {number | undefined} devmajor
+     * @param {number | undefined} devminor
      * @param {string} prefix
      * @returns {import("./types").TarHeader}
      */
