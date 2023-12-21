@@ -292,6 +292,7 @@
         }
 
         /**
+         * Reads a tar archive from a `File` blob.
          * @param {File} file
          */
         static async fromFile(file) {
