@@ -17,7 +17,7 @@
          * @param {import("./types").TarFileOptions} [options]
          */
         addFile(path, file, options) {
-            path = trimPath(path);
+            path = normalizePath(path);
             const filename = splitFilename(path);
 
             const header = tarHeader(
@@ -50,11 +50,11 @@
          * @param {import("./types").TarLinkOptions} [options]
          */
         #addLink(type, path, target, options) {
-            path = trimPath(path);
+            path = normalizePath(path);
             const filename = splitFilename(path);
 
             let trailingSep = target.endsWith("/");
-            target = trimPath(path);
+            target = normalizePath(path);
             if (trailingSep) {
                 target += "/";
             }
@@ -109,7 +109,7 @@
          * @param {import("./types").TarDirectoryOptions} [options]
          */
         addDir(path, options) {
-            path = trimPath(path) + "/";
+            path = normalizePath(path) + "/";
             const filename = splitFilename(path);
 
             const header = tarHeader(
@@ -143,7 +143,7 @@
          * @param {import("./types").TarDeviceOptions} [options]
          */
         #addDevice(type, path, majorId, minorId, options) {
-            path = trimPath(path);
+            path = normalizePath(path);
             const filename = splitFilename(path);
 
             const header = tarHeader(
@@ -442,21 +442,33 @@
     }
 
     /**
-     * Removes the leading and trailing '/' from a path.
+     * Normalizes a path.
      * @param {string} path
      */
-    function trimPath(path) {
-        let start = 0;
-        while (path[start] === "/") {
-            start++;
-        }
-        
-        let end = path.length;
-        while (end > start && path[end - 1] === "/") {
-            end--;
+    function normalizePath(path) {
+        const entries = path.split("/");
+
+        for (let i = 0; i < entries.length; i++) {
+            switch (entries[i]) {
+                case "":
+                case ".":
+                    entries.splice(i, 1);
+                    i--;
+                    break;
+
+                case "..":
+                    if (i >= 1) {
+                        entries.splice(i - 1, 2);
+                        i -= 2;
+                    }
+                    break;
+            
+                default:
+                    break;
+            }
         }
 
-        return path.substring(start, end);
+        return entries.join("/");
     }
 
     /**
