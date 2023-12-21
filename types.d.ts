@@ -24,17 +24,17 @@ export interface TarHeader {
 }
 
 export interface TarPermissionOptions {
-    _mode?: number;
-    _uid?: number;
-    _gid?: number;
-    _uname?: string;
-    _gname?: string;
+    mode?: number;
+    uid?: number;
+    gid?: number;
+    uname?: string;
+    gname?: string;
 }
 
 export interface TarFileOptions extends TarPermissionOptions {}
 
 export interface TarDatedOptions extends TarPermissionOptions {
-    _lastModified?: number;
+    lastModified?: number;
 }
 
 export interface TarDirectoryOptions extends TarDatedOptions {}
