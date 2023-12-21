@@ -16,9 +16,7 @@
          * @param {import("./types").TarFileOptions} [options]
          */
         addFile(path, file, options) {
-            if (path.endsWith("/")) {
-                path = path.substring(0, path.length - 1);
-            }
+            path = trimPath(path);
 
             const sepIndex = path.lastIndexOf("/");
 
@@ -52,10 +50,8 @@
          * @param {import("./types").TarLinkOptions} [options]
          */
         #addLink(type, path, target, options) {
+            path = trimPath(path);
             let sepIndex = path.lastIndexOf("/");
-            if (sepIndex === path.length - 1) {
-                sepIndex = path.substring(0, sepIndex).lastIndexOf("/");
-            }
 
             const header = tarHeader(
                 path.substring(sepIndex + 1),
@@ -77,7 +73,6 @@
 
             this.#indexMap.set(path, this.#entries.length);
             this.#entries.push({ header });
-            
         }
 
         /**
@@ -106,13 +101,9 @@
          * @param {import("./types").TarDirectoryOptions} [options]
          */
         addDir(path, options) {
-            let sepIndex = path.lastIndexOf("/")
-            if (sepIndex === path.length - 1) {
-                sepIndex = path.substring(0, sepIndex).lastIndexOf("/");
-            }
-            else {
-                path += "/";
-            }
+            path = trimPath(path);
+            let sepIndex = path.lastIndexOf("/");
+            path += "/";
 
             const header = tarHeader(
                 path.substring(sepIndex + 1),
@@ -292,6 +283,24 @@
                 type: "application/x-tar"
             });
         }
+    }
+
+    /**
+     * Removes the leading and trailing '/' from a path.
+     * @param {string} path
+     */
+    function trimPath(path) {
+        let start = 0;
+        while (path[start] === "/") {
+            start++;
+        }
+        
+        let end = path.length;
+        while (end > start && path[end - 1] === "/") {
+            end--;
+        }
+
+        return path.substring(start, end);
     }
 
     /**
