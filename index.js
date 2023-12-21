@@ -319,7 +319,9 @@
                 if (file.size < end) {
                     throw new Error(`Malformed archive: Expected size ${end}, got size ${file.size}`);
                 }
-                if (header.typeflag !== 6) {
+                if (header.typeflag !== CHARDEV_TYPE &&
+                    header.typeflag !== BLOCKDEV_TYPE
+                ) {
                     header.devmajor = header.devminor = undefined;
                 }
 
