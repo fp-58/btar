@@ -256,18 +256,8 @@
                 }
 
                 let fullpath = header.prefix + header.name;
-                let entryName;
-                if (fullpath.endsWith("/")) {
-                    let trimmedPath = fullpath.substring(0, fullpath.length - 1);
-                    let sepIndex = trimmedPath.lastIndexOf("/");
-                    entryName = trimmedPath.substring(sepIndex);
-                }
-                else {
-                    let sepIndex = fullpath.lastIndexOf("/");
-                    entryName = fullpath.substring(sepIndex);
-                }
 
-                const content = new ArchivedFile([file.slice(start, end)], entryName, fullpath, {
+                const content = new File([file.slice(start, end)], fullpath, {
                     lastModified: header.lastModified,
                     endings: "transparent"
                 });
@@ -564,28 +554,6 @@
             value = (value + byte) & mask;
         }
         return value;
-    }
-
-    /** @implements {File} */
-    class ArchivedFile extends File {
-        #relativePath;
-
-        /**
-         * @param {BlobPart[]} fileParts
-         * @param {string} name
-         * @param {string} relativePath
-         * @param {FilePropertyBag} options
-         */
-        constructor(
-            fileParts, name, relativePath, options
-        ) {
-            super(fileParts, name, options);
-            this.#relativePath = relativePath;
-        }
-
-        get webkitRelativePath() {
-            return this.#relativePath;
-        }
     }
 
     /**
