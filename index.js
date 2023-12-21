@@ -10,9 +10,10 @@
         #entries = [];
 
         /**
+         * Appends a file entry to the end of the archive.
          * 
-         * @param {string} path
-         * @param {File} file
+         * @param {string} path The path of the file.
+         * @param {File} file The file content.
          * @param {import("./types").TarFileOptions} [options]
          */
         addFile(path, file, options) {
@@ -42,7 +43,7 @@
         }
 
         /**
-         * 
+         * Appends a link with a given type.
          * @param {number} type
          * @param {string} path
          * @param {string} target
@@ -81,9 +82,10 @@
         }
 
         /**
+         * Appends a hard link entry to the end of the archive.
          * 
-         * @param {string} path
-         * @param {string} target
+         * @param {string} path The path of the hard link.
+         * @param {string} target The target path of the hard link.
          * @param {import("./types").TarLinkOptions} [options]
          */
         addHardlink(path, target, options) {
@@ -91,9 +93,10 @@
         }
 
         /**
+         * Appends a symbolic link entry to the end of the archive.
          * 
-         * @param {string} path
-         * @param {string} target
+         * @param {string} path The path of the symbolic link.
+         * @param {string} target The target of the symbolic link.
          * @param {import("./types").TarLinkOptions} options
          */
         addSymlink(path, target, options) {
@@ -101,8 +104,8 @@
         }
 
         /**
-         * 
-         * @param {string} path
+         * Appends a directory entry to the end of the archive.
+         * @param {string} path The path of the directory.
          * @param {import("./types").TarDirectoryOptions} [options]
          */
         addDir(path, options) {
@@ -166,10 +169,11 @@
         }
 
         /**
+         * Appends a character device entry to the end of the archive.
          * 
-         * @param {string} path
-         * @param {number} majorId
-         * @param {number} minorId
+         * @param {string} path The path of the character device.
+         * @param {number} majorId The major component of the device ID.
+         * @param {number} minorId The minor component of the device ID.
          * @param {import("./types").TarDeviceOptions} [options]
          */
         addCharDevice(path, majorId, minorId, options) {
@@ -177,10 +181,11 @@
         }
 
         /**
+         * Appends a block device entry to the end of the archive.
          * 
-         * @param {string} path
-         * @param {number} majorId
-         * @param {number} minorId
+         * @param {string} path The path of the block device.
+         * @param {number} majorId The major component of the device ID.
+         * @param {number} minorId The minor component of the device ID.
          * @param {import("./types").TarDeviceOptions} [options]
          */
         addBlockDevice(path, majorId, minorId, options) {
@@ -188,8 +193,8 @@
         }
 
         /**
-         * 
-         * @param {number} index
+         * Returns the archived entry at a given index.
+         * @param {number} index The index of the entry.
          * @returns {import("./types").TarEntry | undefined}
          */
         entryAt(index) {
@@ -208,7 +213,8 @@
         }
 
         /**
-         * 
+         * Returns the index of an archived entry. Returns `-1` if the path is
+         * not archived.
          * @param {string} path
          * @returns {number}
          */
@@ -332,7 +338,7 @@
             }
         }
 
-        /** Removes overwritten entries from the tar archive. */
+        /** Removes duplicate entries from the archive. */
         trim() {
             /** @type {Set<string>} */
             let entrySet = new Set();
@@ -358,6 +364,7 @@
             this.#indexMap = new Map(indexedEntries);
         }
 
+        /** Returns the binary representation of the archive as a `Blob` */
         toBlob() {
             /** @type {BlobPart[]} */
             const parts = [];
