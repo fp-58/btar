@@ -53,6 +53,12 @@
             path = trimPath(path);
             let sepIndex = path.lastIndexOf("/");
 
+            let trailingSep = target.endsWith("/");
+            target = trimPath(path);
+            if (trailingSep) {
+                target += "/";
+            }
+
             const header = tarHeader(
                 path.substring(sepIndex + 1),
                 options?._mode ?? 0o644,
