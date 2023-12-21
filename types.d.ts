@@ -1,6 +1,4 @@
-export class TarArchive {
-    static fromFile(file: File): Promise<TarArchive>;
-}
+export { TarArchive } from "./index";
 
 export interface TarEntry {
     header: TarHeader;
