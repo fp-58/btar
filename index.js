@@ -1,5 +1,5 @@
 (() => {
-    const blockSize = 512;
+    const BLOCK_SIZE = 512;
 
     // Type flags
     const FILE_TYPE = 0;
@@ -353,7 +353,7 @@
                 let header = await readHeader(); header;
                 header = await readHeader()
             ) {
-                let start = blockIndex * blockSize;
+                let start = blockIndex * BLOCK_SIZE;
                 let end = start + header.size;
                 if (file.size < end) {
                     throw new Error(`Malformed archive: Expected size ${end}, got size ${file.size}`);
@@ -374,7 +374,7 @@
                 result.#indexMap.set(fullpath, result.#entries.length);
 
                 result.#entries.push({ header, content });
-                blockIndex += Math.ceil(header.size / blockSize);
+                blockIndex += Math.ceil(header.size / BLOCK_SIZE);
             }
 
             /**
@@ -411,12 +411,12 @@
 
             async function peekBlock() {
                 let start = blockIndex * blockIndex;
-                let end = start + blockSize;
+                let end = start + BLOCK_SIZE;
                 if (file.size < start) {
-                    return new Uint8Array(blockSize);
+                    return new Uint8Array(BLOCK_SIZE);
                 }
                 else if (file.size < end) {
-                    const block = new Uint8Array(blockSize);
+                    const block = new Uint8Array(BLOCK_SIZE);
                     const slice = file.slice(start);
                     const data = new Uint8Array(await slice.arrayBuffer());
                     block.set(data);
@@ -430,7 +430,7 @@
 
             async function nextBlock() {
                 const block = await peekBlock();
-                if (file.size - blockIndex * blockSize > -blockSize) {
+                if (file.size - blockIndex * BLOCK_SIZE > -BLOCK_SIZE) {
                     blockIndex++;
                 }
                 return block;
@@ -469,23 +469,23 @@
             const parts = [];
 
             for (const entry of this.#entries) {
-                const headerBlock = new Uint8Array(blockSize);
+                const headerBlock = new Uint8Array(BLOCK_SIZE);
                 writeHeader(entry.header, headerBlock);
                 parts.push(headerBlock);
 
                 if (entry.content) {
                     parts.push(entry.content);
 
-                    let overflow = entry.content.size % blockSize;
+                    let overflow = entry.content.size % BLOCK_SIZE;
                     if (overflow > 0) {
-                        const paddingSize = blockSize - overflow;
+                        const paddingSize = BLOCK_SIZE - overflow;
                         const padding = new ArrayBuffer(paddingSize);
                         parts.push(padding);
                     }
                 }
             }
 
-            const endOfArchive = new ArrayBuffer(2 * blockSize);
+            const endOfArchive = new ArrayBuffer(2 * BLOCK_SIZE);
             parts.push(endOfArchive);
 
             return new Blob(parts, {
