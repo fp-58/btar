@@ -1,4 +1,4 @@
-export { TarArchive } from "./index";
+export { TarArchive } from "./lib/index";
 
 export interface TarEntry {
     header: TarHeader;

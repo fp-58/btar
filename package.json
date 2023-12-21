@@ -2,7 +2,7 @@
     "name": "btar",
     "version": "0.0.1",
     "description": "A basic API for creating and reading Ustar TAR files in the browser.",
-    "browser": "./index.js",
+    "browser": "./lib/index.js",
     "types": "./types.d.ts",
     "devDependencies": {
         "terser": "^5.26.0"
