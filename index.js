@@ -29,7 +29,7 @@
                 options?._gid ?? 0,
                 file.size,
                 file.lastModified,
-                -1,
+                undefined,
                 0,
                 "",
                 0,
@@ -64,7 +64,7 @@
                 options?._gid ?? 0,
                 0,
                 options?._lastModified ?? Date.now(),
-                -1,
+                undefined,
                 type,
                 target,
                 0,
@@ -121,7 +121,7 @@
                 options?._gid ?? 0,
                 0,
                 options?._lastModified ?? Date.now(),
-                -1,
+                undefined,
                 5,
                 "",
                 0,
@@ -301,7 +301,7 @@
      * @param {number} gid
      * @param {number} size
      * @param {number} lastModified
-     * @param {number} checksum
+     * @param {number | undefined} checksum
      * @param {number} typeflag
      * @param {string} linkname
      * @param {number} version
@@ -317,11 +317,12 @@
         version, uname, gname, devmajor, devminor, prefix
     ) {
         const header = {
-            name, mode, uid, gid, size, lastModified, checksum, typeflag,
-            linkname, version, uname, gname, devmajor, devminor, prefix
+            name, mode, uid, gid, size, lastModified, checksum: checksum ?? 0,
+            typeflag, linkname, version, uname, gname, devmajor, devminor,
+            prefix
         };
 
-        if (checksum === -1) {
+        if (checksum === undefined) {
             const bytes = new Uint8Array(500);
             writeHeader(header, bytes);
 
@@ -353,13 +354,13 @@
         writeOctal      (header.version & 0o77, output, 0x107, 3);
         writeString     (header.uname,          output, 0x109, 32);
         writeString     (header.gname,          output, 0x129, 32);
-        if (header.devmajor === -1) {
+        if (header.devmajor === undefined) {
             output.fill(0x00, 0x149, 0x149 + 8);
         }
         else {
             writeOctal  (header.devmajor,       output, 0x149, 8);
         }
-        if (header.devminor === -1) {
+        if (header.devminor === undefined) {
             output.fill(0x00, 0x151, 0x151 + 8);
         }
         else {

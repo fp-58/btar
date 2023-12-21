@@ -20,8 +20,8 @@ export interface TarHeader {
     version: number;
     uname: string;
     gname: string;
-    devmajor: number;
-    devminor: number;
+    devmajor?: number;
+    devminor?: number;
     prefix: string;
 }
 
