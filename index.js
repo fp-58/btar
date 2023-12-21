@@ -192,6 +192,10 @@
             this.#addDevice(4, path, majorId, minorId, options);
         }
 
+        get length() {
+            return this.#entries.length;
+        }
+
         /**
          * Returns the archived entry at a given index.
          * @param {number} index The index of the entry.
