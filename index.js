@@ -10,6 +10,14 @@
     const DIR_TYPE = 5;
     const FIFO_TYPE = 6;
 
+    // Default values
+    const DEF_FILEMODE = 0o644;
+    const DEF_DIRMODE = 0o775;
+    const DEF_UID = 0;
+    const DEF_GID = 0;
+    const DEF_UNAME = "";
+    const DEF_GNAME = "";
+
     class TarArchive {
         /**
          * A map of file paths to entry indicies.
@@ -32,17 +40,17 @@
 
             const header = tarHeader(
                 filename._name,
-                options?.mode ?? 0o644,
-                options?.uid ?? 0,
-                options?.gid ?? 0,
+                options?.mode ?? DEF_FILEMODE,
+                options?.uid ?? DEF_UID,
+                options?.gid ?? DEF_GID,
                 file.size,
                 file.lastModified,
                 undefined,
                 FILE_TYPE,
                 "",
                 0,
-                options?.uname ?? "",
-                options?.gname ?? "",
+                options?.uname ?? DEF_UNAME,
+                options?.gname ?? DEF_GNAME,
                 undefined,
                 undefined,
                 filename._prefix
@@ -71,17 +79,17 @@
 
             const header = tarHeader(
                 filename._name,
-                options?.mode ?? 0o644,
-                options?.uid ?? 0,
-                options?.gid ?? 0,
+                options?.mode ?? DEF_FILEMODE,
+                options?.uid ?? DEF_UID,
+                options?.gid ?? DEF_GID,
                 0,
                 options?.lastModified ?? Date.now(),
                 undefined,
                 type,
                 target,
                 0,
-                options?.uname ?? "",
-                options?.gname ?? "",
+                options?.uname ?? DEF_UNAME,
+                options?.gname ?? DEF_GNAME,
                 undefined,
                 undefined,
                 filename._prefix
@@ -124,17 +132,17 @@
 
             const header = tarHeader(
                 filename._name,
-                options?.mode ?? 0o775,
-                options?.uid ?? 0,
-                options?.gid ?? 0,
+                options?.mode ?? DEF_DIRMODE,
+                options?.uid ?? DEF_UID,
+                options?.gid ?? DEF_GID,
                 0,
                 options?.lastModified ?? Date.now(),
                 undefined,
                 DIR_TYPE,
                 "",
                 0,
-                options?.uname ?? "",
-                options?.gname ?? "",
+                options?.uname ?? DEF_UNAME,
+                options?.gname ?? DEF_GNAME,
                 undefined,
                 undefined,
                 filename._prefix
@@ -158,17 +166,17 @@
 
             const header = tarHeader(
                 filename._name,
-                options?.mode ?? 0o644,
-                options?.uid ?? 0,
-                options?.gid ?? 0,
+                options?.mode ?? DEF_FILEMODE,
+                options?.uid ?? DEF_UID,
+                options?.gid ?? DEF_GID,
                 0,
                 options?.lastModified ?? Date.now(),
                 undefined,
                 type,
                 "",
                 0,
-                options?.uname ?? "",
-                options?.gname ?? "",
+                options?.uname ?? DEF_UNAME,
+                options?.gname ?? DEF_GNAME,
                 majorId,
                 minorId,
                 filename._prefix
@@ -213,17 +221,17 @@
 
             const header = tarHeader(
                 filename._name,
-                options?.mode ?? 0o644,
-                options?.uid ?? 0,
-                options?.gid ?? 0,
+                options?.mode ?? DEF_FILEMODE,
+                options?.uid ?? DEF_UID,
+                options?.gid ?? DEF_GID,
                 0,
                 options?.lastModified ?? Date.now(),
                 undefined,
                 FIFO_TYPE,
                 "",
                 0,
-                options?.uname ?? "",
-                options?.gname ?? "",
+                options?.uname ?? DEF_UNAME,
+                options?.gname ?? DEF_GNAME,
                 undefined,
                 undefined,
                 filename._prefix
