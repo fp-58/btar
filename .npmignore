@@ -1,0 +1,8 @@
+# Development scripts
+/scripts/
+
+# Terser config
+/terser/
+
+# JS Configs
+jsconfig.json
