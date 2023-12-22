@@ -3,9 +3,10 @@
         "allowJs": true,
         "checkJs": true,
         "strict": true,
-        "target": "es2022"
+        "target": "es2022",
+        "module": "es2022"
     },
-    "exclude": [
-        "./lib/esmodule.js"
+    "files": [
+        "./esmodule.js"
     ]
 }
