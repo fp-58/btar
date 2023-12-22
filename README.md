@@ -18,6 +18,11 @@ Replace `VERSION` with the version tag.
 
 ## Importing
 
+### ES6 Modules
+```js
+import * as btar from "<uri-to-btar>/lib/esmodule.js";
+```
+
 ### CommonJS
 ```js
 const btar = require("btar");
