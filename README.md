@@ -47,7 +47,7 @@ The script declares a global variable named `btar`.
 
 ### Reading an archive
 ```js
-const archive = await btar.TarArchive.fromFile(file);
+const archive = await btar.TarArchive.fromBlob(file);
 ```
 
 ### Extracting files from an archive
