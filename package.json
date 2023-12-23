@@ -1,6 +1,6 @@
 {
     "name": "btar",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "description": "A basic for library creating and reading USTar files in the browser.",
     "browser": "./lib/index.js",
     "types": "./types.d.ts",
