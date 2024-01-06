@@ -6,7 +6,7 @@
 @call npx tsc --removeComments
 
 @REM Generate definition files with comments
-@call npx tsc --noEmit
+@call npx tsc --emitDeclarationOnly
 
 @REM Rename compiled files (for backwards compatibility with v1.0.0)
 @move lib/index.js lib/esmodule.js
