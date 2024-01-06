@@ -12,3 +12,6 @@ npx tsc --emitDeclarationOnly
 
 # Rename compiled files (for backwards compatibility with v1.0.0)
 mv lib/index.js lib/esmodule.js
+
+# Generate index.js using esmodule.js with rollup
+npx rollup lib/esmodule.js -o lib/index.js -f umd -n btar

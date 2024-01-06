@@ -10,3 +10,6 @@
 
 @REM Rename compiled files (for backwards compatibility with v1.0.0)
 @move lib/index.js lib/esmodule.js
+
+@REM Generate index.js using esmodule.js with rollup
+@call npx rollup lib/esmodule.js -o lib/index.js -f umd -n btar
