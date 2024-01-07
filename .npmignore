@@ -12,3 +12,6 @@
 
 # Source files
 /src/
+
+# Sourcemaps
+*.js.map
