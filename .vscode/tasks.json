@@ -1,0 +1,14 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"command": "${workspaceFolder}/scripts/build.sh",
+			"windows": {
+				"command": "${workspaceFolder}\\scripts\\build.bat"
+			},
+			"group": "build",
+			"label": "build"
+		}
+	]
+}
