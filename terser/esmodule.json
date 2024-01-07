@@ -3,7 +3,7 @@
     "ecma": 2022,
     "mangle": {
         "properties": {
-            "keep_quoted": "strict"
+            "regex": "_.*"
         }
     },
     "compress": {
