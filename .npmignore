@@ -1,8 +1,17 @@
 # Development scripts
 /scripts/
 
+# VSCode files
+.vscode/
+
 # Terser config
 /terser/
 
-# JS Configs
-jsconfig.json
+# TS Config
+/tsconfig.json
+
+# Source files
+/src/
+
+# Sourcemaps
+*.js.map
