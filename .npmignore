@@ -1,6 +1,9 @@
 # Development scripts
 /scripts/
 
+# VSCode files
+.vscode/
+
 # Terser config
 /terser/
 
