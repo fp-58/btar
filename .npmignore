@@ -4,5 +4,8 @@
 # Terser config
 /terser/
 
-# JS Configs
-jsconfig.json
+# TS Config
+/tsconfig.json
+
+# Source files
+/src/
