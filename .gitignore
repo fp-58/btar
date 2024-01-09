@@ -131,3 +131,6 @@ dist
 
 # Compiled javascript
 /lib/
+
+# Compiled type definitions
+/types/
