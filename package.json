@@ -3,7 +3,7 @@
     "version": "1.0.1",
     "description": "A basic for library creating and reading USTar files in the browser.",
     "browser": "./lib/index.js",
-    "types": "./types/index.d.ts",
+    "types": "./types/esmodule.d.ts",
     "devDependencies": {
         "rollup": "^4.9.4",
         "run-script-os": "^1.1.6",
@@ -11,8 +11,14 @@
         "typescript": "^5.3.3"
     },
     "scripts": {
-        "prepare": "run-script-os",
-        "prepare:win32": "./scripts/build.bat",
-        "prepare:nix": "./scripts/build.sh"
+        "prepare": "npm run build",
+        "build": "echo '=> build' && npm run compile && npm run rollup && npm run minify",
+        "compile": "echo '=> compile' && npm run compile:js && npm run compile:dts",
+        "compile:js": "echo '=> compile:js' && tsc --removeComments",
+        "compile:dts": "echo '=> compile:dts' && tsc --emitDeclarationOnly",
+        "rollup": "echo '=> rollup' && rollup lib/esmodule.js -o lib/index.js -f umd -n btar -m --sourcemapExcludeSources",
+        "minify": "echo '=> minify' && npm run minify:esmodule && npm run minify:index",
+        "minify:esmodule": "echo '=> minify:esmodule' && terser lib/esmodule.js --config-file terser/esmodule.json -o lib/esmodule.min.js",
+        "minify:index": "echo '=> minify:index' && terser lib/index.js --config-file terser/index.json -o lib/index.min.js"
     }
 }
