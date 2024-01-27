@@ -25,7 +25,7 @@ export class TarArchive implements Iterable<TarEntry> {
 
     /**
      * Appends a file entry to the end of the archive.
-     * 
+     *
      * @param path The path of the file.
      * @param file The file content.
      */
@@ -95,31 +95,27 @@ export class TarArchive implements Iterable<TarEntry> {
 
     /**
      * Appends a hard link entry to the end of the archive.
-     * 
+     *
      * @param path The path of the hard link.
      * @param target The target path of the hard link.
      */
-    addHardlink(
-        path: string, target: string, options?: TarLinkOptions
-    ): void {
+    addHardlink(path: string, target: string, options?: TarLinkOptions): void {
         this.#addLink(LINK_TYPE, path, target, options);
     }
 
     /**
      * Appends a symbolic link entry to the end of the archive.
-     * 
+     *
      * @param path The path of the symbolic link.
      * @param target The target of the symbolic link.
      */
-    addSymlink(
-        path: string, target: string, options?: TarLinkOptions
-    ): void {
+    addSymlink(path: string, target: string, options?: TarLinkOptions): void {
         this.#addLink(SYMLINK_TYPE, path, target, options);
     }
 
     /**
      * Appends a directory entry to the end of the archive.
-     * 
+     *
      * @param path The path of the directory.
      */
     addDir(path: string, options?: TarDirectoryOptions) {
@@ -183,7 +179,7 @@ export class TarArchive implements Iterable<TarEntry> {
 
     /**
      * Appends a character device entry to the end of the archive.
-     * 
+     *
      * @param {string} path The path of the character device.
      * @param {number} majorId The major component of the device ID.
      * @param {number} minorId The minor component of the device ID.
@@ -199,7 +195,7 @@ export class TarArchive implements Iterable<TarEntry> {
 
     /**
      * Appends a block device entry to the end of the archive.
-     * 
+     *
      * @param {string} path The path of the block device.
      * @param {number} majorId The major component of the device ID.
      * @param {number} minorId The minor component of the device ID.
@@ -215,7 +211,7 @@ export class TarArchive implements Iterable<TarEntry> {
 
     /**
      * Appends an FIFO (named pipe) entry to the end of the archive.
-     * 
+     *
      * @param path The path of the FIFO.
      */
     addFIFO(path: string, options?: TarFIFOOptions) {
@@ -262,7 +258,7 @@ export class TarArchive implements Iterable<TarEntry> {
 
     /**
      * Returns the archived entry at a given index.
-     * 
+     *
      * @param index The index of the entry.
      */
     entryAt(index: number): TarEntry | undefined {
@@ -274,8 +270,7 @@ export class TarArchive implements Iterable<TarEntry> {
         const header = Object.assign({}, entry.header);
         if (entry.content) {
             return { header, content: entry.content };
-        }
-        else {
+        } else {
             return { header };
         }
     }
@@ -297,8 +292,7 @@ export class TarArchive implements Iterable<TarEntry> {
                 }
             }
             return -1;
-        }
-        else {
+        } else {
             return mappedIndex;
         }
     }
@@ -311,8 +305,7 @@ export class TarArchive implements Iterable<TarEntry> {
 
         this.#entries.splice(index, 1);
         for (const [path, i] of this.#indexMap) {
-            if (i < index)
-                continue;
+            if (i < index) continue;
 
             this.#indexMap.set(path, i - 1);
         }
@@ -320,13 +313,14 @@ export class TarArchive implements Iterable<TarEntry> {
 
     /**
      * Removes an entry from the archive by path.
-     * 
+     *
      * @param path The path of the entry to remove.
      */
     removeEntry(path: string): void {
         for (
-            let i = this.#indexMap.get(path) ?? (this.#entries.length - 1);
-            i >= 0; i--
+            let i = this.#indexMap.get(path) ?? this.#entries.length - 1;
+            i >= 0;
+            i--
         ) {
             const entry = this.#entries[i];
             const fullpath = entry.header.prefix + entry.header.name;
@@ -340,19 +334,23 @@ export class TarArchive implements Iterable<TarEntry> {
     /** Reads a tar archive from a `Blob`. */
     static async fromBlob(file: Blob): Promise<TarArchive> {
         let blockIndex = 0;
-        
+
         const result = new TarArchive();
 
         for (
-            let header = await readHeader(); header;
+            let header = await readHeader();
+            header;
             header = await readHeader()
         ) {
             let start = blockIndex * BLOCK_SIZE;
             let end = start + header.size;
             if (file.size < end) {
-                throw new Error(`Malformed archive: Expected size ${end}, got size ${file.size}`);
+                throw new Error(
+                    `Malformed archive: Expected size ${end}, got size ${file.size}`
+                );
             }
-            if (header.typeflag !== CHARDEV_TYPE &&
+            if (
+                header.typeflag !== CHARDEV_TYPE &&
                 header.typeflag !== BLOCKDEV_TYPE
             ) {
                 header.devmajor = header.devminor = undefined;
@@ -362,7 +360,7 @@ export class TarArchive implements Iterable<TarEntry> {
 
             const content = new File([file.slice(start, end)], fullpath, {
                 lastModified: header.lastModified,
-                endings: "transparent"
+                endings: "transparent",
             });
 
             result.#indexMap.set(fullpath, result.#entries.length);
@@ -384,21 +382,21 @@ export class TarArchive implements Iterable<TarEntry> {
             }
 
             return tarHeader(
-                decodeString(headerBlock, 0x000, 100),  // name
-                decodeOctal (headerBlock, 0x064, 8),    // mode
-                decodeOctal (headerBlock, 0x06c, 8),    // uid
-                decodeOctal (headerBlock, 0x074, 8),    // gid
-                decodeOctal (headerBlock, 0x07c, 12),   // size
-                decodeOctal (headerBlock, 0x088, 12),   // lastModified
-                decodeOctal (headerBlock, 0x094, 8),    // checksum
-                decodeOctal (headerBlock, 0x09c, 1),    // typeflag
-                decodeString(headerBlock, 0x09d, 100),  // linkname
-                decodeOctal (headerBlock, 0x107, 3),    // version
-                decodeString(headerBlock, 0x109, 32),   // uname
-                decodeString(headerBlock, 0x129, 32),   // gname
-                decodeOctal (headerBlock, 0x149, 8),    // devmajor
-                decodeOctal (headerBlock, 0x151, 8),    // devminor
-                decodeString(headerBlock, 0x159, 155)   // prefix
+                decodeString(headerBlock, 0x000, 100), // name
+                decodeOctal(headerBlock, 0x064, 8), // mode
+                decodeOctal(headerBlock, 0x06c, 8), // uid
+                decodeOctal(headerBlock, 0x074, 8), // gid
+                decodeOctal(headerBlock, 0x07c, 12), // size
+                decodeOctal(headerBlock, 0x088, 12), // lastModified
+                decodeOctal(headerBlock, 0x094, 8), // checksum
+                decodeOctal(headerBlock, 0x09c, 1), // typeflag
+                decodeString(headerBlock, 0x09d, 100), // linkname
+                decodeOctal(headerBlock, 0x107, 3), // version
+                decodeString(headerBlock, 0x109, 32), // uname
+                decodeString(headerBlock, 0x129, 32), // gname
+                decodeOctal(headerBlock, 0x149, 8), // devmajor
+                decodeOctal(headerBlock, 0x151, 8), // devminor
+                decodeString(headerBlock, 0x159, 155) // prefix
             );
         }
 
@@ -407,15 +405,13 @@ export class TarArchive implements Iterable<TarEntry> {
             let end = start + BLOCK_SIZE;
             if (file.size < start) {
                 return new Uint8Array(BLOCK_SIZE);
-            }
-            else if (file.size < end) {
+            } else if (file.size < end) {
                 const block = new Uint8Array(BLOCK_SIZE);
                 const slice = file.slice(start);
                 const data = new Uint8Array(await slice.arrayBuffer());
                 block.set(data);
                 return block;
-            }
-            else {
+            } else {
                 const slice = file.slice(start, end);
                 return new Uint8Array(await slice.arrayBuffer());
             }
@@ -440,8 +436,7 @@ export class TarArchive implements Iterable<TarEntry> {
 
             if (!entrySet.has(path)) {
                 entrySet.add(path);
-            }
-            else {
+            } else {
                 this.#entries.splice(i, 1);
                 i++;
             }
@@ -480,7 +475,7 @@ export class TarArchive implements Iterable<TarEntry> {
 
         return new Blob(parts, {
             endings: "transparent",
-            type: "application/x-tar"
+            type: "application/x-tar",
         });
     }
 }
@@ -503,7 +498,7 @@ function normalizePath(path: string): string {
                     i -= 2;
                 }
                 break;
-        
+
             default:
                 break;
         }
@@ -551,9 +546,21 @@ function tarHeader(
     }
 
     const header: TarHeader = {
-        name, mode, uid, gid, size, lastModified, checksum: checksum ?? 0,
-        typeflag, linkname, version, uname, gname, devmajor, devminor,
-        prefix
+        name,
+        mode,
+        uid,
+        gid,
+        size,
+        lastModified,
+        checksum: checksum ?? 0,
+        typeflag,
+        linkname,
+        version,
+        uname,
+        gname,
+        devmajor,
+        devminor,
+        prefix,
     };
 
     if (checksum === undefined) {
@@ -569,36 +576,36 @@ function tarHeader(
 }
 
 function writeHeader(
-    header: TarHeader, output: Uint8Array, offset: number = 0
+    header: TarHeader,
+    output: Uint8Array,
+    offset: number = 0
 ): void {
     output = output.subarray(offset, offset + 500);
-    writeString     (header.name,           output, 0x000, 100);
-    writeOctal      (header.mode,           output, 0x064, 8);
-    writeOctal      (header.uid,            output, 0x06c, 8);
-    writeOctal      (header.gid,            output, 0x074, 8);
-    writeOctal      (header.size,           output, 0x07c, 12);
-    writeOctal      (header.lastModified,   output, 0x088, 12);
-    writeOctal      (header.checksum,       output, 0x094, 7);
+    writeString(header.name, output, 0x000, 100);
+    writeOctal(header.mode, output, 0x064, 8);
+    writeOctal(header.uid, output, 0x06c, 8);
+    writeOctal(header.gid, output, 0x074, 8);
+    writeOctal(header.size, output, 0x07c, 12);
+    writeOctal(header.lastModified, output, 0x088, 12);
+    writeOctal(header.checksum, output, 0x094, 7);
     output[0x9b] = 0x20;
-    writeOctal      (header.typeflag,       output, 0x09c, 1);
-    writeString     (header.linkname,       output, 0x09d, 100);
-    writeString     ("ustar",               output, 0x101, 6);
-    writeOctal      (header.version & 0o77, output, 0x107, 3);
-    writeString     (header.uname,          output, 0x109, 32);
-    writeString     (header.gname,          output, 0x129, 32);
+    writeOctal(header.typeflag, output, 0x09c, 1);
+    writeString(header.linkname, output, 0x09d, 100);
+    writeString("ustar", output, 0x101, 6);
+    writeOctal(header.version & 0o77, output, 0x107, 3);
+    writeString(header.uname, output, 0x109, 32);
+    writeString(header.gname, output, 0x129, 32);
     if (header.devmajor === undefined) {
         output.fill(0x00, 0x149, 0x149 + 8);
-    }
-    else {
-        writeOctal  (header.devmajor,       output, 0x149, 8);
+    } else {
+        writeOctal(header.devmajor, output, 0x149, 8);
     }
     if (header.devminor === undefined) {
         output.fill(0x00, 0x151, 0x151 + 8);
+    } else {
+        writeOctal(header.devminor, output, 0x151, 8);
     }
-    else {
-        writeOctal  (header.devminor,       output, 0x151, 8);
-    }
-    writeString     (header.prefix,         output, 0x159, 155);
+    writeString(header.prefix, output, 0x159, 155);
 }
 
 /** Writes a null-terminated string to a Uint8Array. */
@@ -640,7 +647,7 @@ function writeOctal(
 function generateChecksum(bytes: Uint8Array, precision: number): number {
     const mask = (2 << precision) - 1;
     const chksumStart = 0x094;
-    const chksumEnd =   0x09b;
+    const chksumEnd = 0x09b;
 
     let value = 0;
     for (let i = 0; i < bytes.length; i++) {
@@ -673,10 +680,12 @@ function decodeString(
 
 /** Parses a null-terminated octal string from an array of bytes. */
 function decodeOctal(
-    bytes: Uint8Array, offset: number, length: number
+    bytes: Uint8Array,
+    offset: number,
+    length: number
 ): number {
     bytes = new Uint8Array(bytes, offset, length);
-    
+
     let value = 0;
     for (const byte of bytes) {
         if (byte === 0) {
@@ -694,7 +703,7 @@ function decodeOctal(
 
 /** Returns whether or not all bytes are zero. */
 function isZeroed(bytes: Uint8Array): boolean {
-    return bytes.every(v => v === 0);
+    return bytes.every((v) => v === 0);
 }
 
 export interface TarEntry {
