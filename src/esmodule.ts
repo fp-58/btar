@@ -1,22 +1,9 @@
-const BLOCK_SIZE = 512;
-const MAX_TIMESTAMP = 0o777777777777;
-
-// Type flags
-const FILE_TYPE = 0;
-const LINK_TYPE = 1;
-const SYMLINK_TYPE = 2;
-const CHARDEV_TYPE = 3;
-const BLOCKDEV_TYPE = 4;
-const DIR_TYPE = 5;
-const FIFO_TYPE = 6;
-
-// Default values
-const DEF_FILEMODE = 0o644;
-const DEF_DIRMODE = 0o775;
-const DEF_UID = 0;
-const DEF_GID = 0;
-const DEF_UNAME = "";
-const DEF_GNAME = "";
+import {
+    BLOCK_SIZE,
+    MAX_TIMESTAMP,
+    TarDefaults,
+    TarEntryType,
+} from "./constants.js";
 
 export class TarArchive implements Iterable<TarEntry> {
     /** A map of file paths to entry indicies. */
@@ -35,17 +22,17 @@ export class TarArchive implements Iterable<TarEntry> {
 
         const header = tarHeader(
             filename._name,
-            options?.mode ?? DEF_FILEMODE,
-            options?.uid ?? DEF_UID,
-            options?.gid ?? DEF_GID,
+            options?.mode ?? TarDefaults.filemode,
+            options?.uid ?? TarDefaults.uid,
+            options?.gid ?? TarDefaults.gid,
             file.size,
             file.lastModified,
             undefined,
-            FILE_TYPE,
+            TarEntryType.file,
             "",
             0,
-            options?.uname ?? DEF_UNAME,
-            options?.gname ?? DEF_GNAME,
+            options?.uname ?? TarDefaults.uname,
+            options?.gname ?? TarDefaults.gname,
             undefined,
             undefined,
             filename._prefix
@@ -57,7 +44,7 @@ export class TarArchive implements Iterable<TarEntry> {
 
     /** Appends a link with a given type. */
     #addLink(
-        type: typeof LINK_TYPE | typeof SYMLINK_TYPE,
+        type: TarEntryType.link | TarEntryType.symlink,
         path: string,
         target: string,
         options?: TarLinkOptions
@@ -73,17 +60,17 @@ export class TarArchive implements Iterable<TarEntry> {
 
         const header = tarHeader(
             filename._name,
-            options?.mode ?? DEF_FILEMODE,
-            options?.uid ?? DEF_UID,
-            options?.gid ?? DEF_GID,
+            options?.mode ?? TarDefaults.filemode,
+            options?.uid ?? TarDefaults.uid,
+            options?.gid ?? TarDefaults.gid,
             0,
             options?.lastModified ?? Date.now(),
             undefined,
             type,
             target,
             0,
-            options?.uname ?? DEF_UNAME,
-            options?.gname ?? DEF_GNAME,
+            options?.uname ?? TarDefaults.uname,
+            options?.gname ?? TarDefaults.gname,
             undefined,
             undefined,
             filename._prefix
@@ -100,7 +87,7 @@ export class TarArchive implements Iterable<TarEntry> {
      * @param target The target path of the hard link.
      */
     addHardlink(path: string, target: string, options?: TarLinkOptions): void {
-        this.#addLink(LINK_TYPE, path, target, options);
+        this.#addLink(TarEntryType.link, path, target, options);
     }
 
     /**
@@ -110,7 +97,7 @@ export class TarArchive implements Iterable<TarEntry> {
      * @param target The target of the symbolic link.
      */
     addSymlink(path: string, target: string, options?: TarLinkOptions): void {
-        this.#addLink(SYMLINK_TYPE, path, target, options);
+        this.#addLink(TarEntryType.symlink, path, target, options);
     }
 
     /**
@@ -124,17 +111,17 @@ export class TarArchive implements Iterable<TarEntry> {
 
         const header = tarHeader(
             filename._name,
-            options?.mode ?? DEF_DIRMODE,
-            options?.uid ?? DEF_UID,
-            options?.gid ?? DEF_GID,
+            options?.mode ?? TarDefaults.dirmode,
+            options?.uid ?? TarDefaults.uid,
+            options?.gid ?? TarDefaults.gid,
             0,
             options?.lastModified ?? Date.now(),
             undefined,
-            DIR_TYPE,
+            TarEntryType.directory,
             "",
             0,
-            options?.uname ?? DEF_UNAME,
-            options?.gname ?? DEF_GNAME,
+            options?.uname ?? TarDefaults.uname,
+            options?.gname ?? TarDefaults.gname,
             undefined,
             undefined,
             filename._prefix
@@ -146,7 +133,7 @@ export class TarArchive implements Iterable<TarEntry> {
 
     /** Appends a device entry to the end of the archive. */
     #addDevice(
-        type: typeof CHARDEV_TYPE | typeof BLOCKDEV_TYPE,
+        type: TarEntryType.chardev | TarEntryType.blockdev,
         path: string,
         majorId: number,
         minorId: number,
@@ -157,17 +144,17 @@ export class TarArchive implements Iterable<TarEntry> {
 
         const header = tarHeader(
             filename._name,
-            options?.mode ?? DEF_FILEMODE,
-            options?.uid ?? DEF_UID,
-            options?.gid ?? DEF_GID,
+            options?.mode ?? TarDefaults.filemode,
+            options?.uid ?? TarDefaults.uid,
+            options?.gid ?? TarDefaults.gid,
             0,
             options?.lastModified ?? Date.now(),
             undefined,
             type,
             "",
             0,
-            options?.uname ?? DEF_UNAME,
-            options?.gname ?? DEF_GNAME,
+            options?.uname ?? TarDefaults.uname,
+            options?.gname ?? TarDefaults.gname,
             majorId,
             minorId,
             filename._prefix
@@ -190,7 +177,7 @@ export class TarArchive implements Iterable<TarEntry> {
         minorId: number,
         options?: TarDeviceOptions
     ): void {
-        this.#addDevice(CHARDEV_TYPE, path, majorId, minorId, options);
+        this.#addDevice(TarEntryType.chardev, path, majorId, minorId, options);
     }
 
     /**
@@ -206,7 +193,7 @@ export class TarArchive implements Iterable<TarEntry> {
         minorId: number,
         options?: TarDeviceOptions
     ): void {
-        this.#addDevice(BLOCKDEV_TYPE, path, majorId, minorId, options);
+        this.#addDevice(TarEntryType.blockdev, path, majorId, minorId, options);
     }
 
     /**
@@ -220,17 +207,17 @@ export class TarArchive implements Iterable<TarEntry> {
 
         const header = tarHeader(
             filename._name,
-            options?.mode ?? DEF_FILEMODE,
-            options?.uid ?? DEF_UID,
-            options?.gid ?? DEF_GID,
+            options?.mode ?? TarDefaults.filemode,
+            options?.uid ?? TarDefaults.uid,
+            options?.gid ?? TarDefaults.gid,
             0,
             options?.lastModified ?? Date.now(),
             undefined,
-            FIFO_TYPE,
+            TarEntryType.fifo,
             "",
             0,
-            options?.uname ?? DEF_UNAME,
-            options?.gname ?? DEF_GNAME,
+            options?.uname ?? TarDefaults.uname,
+            options?.gname ?? TarDefaults.gname,
             undefined,
             undefined,
             filename._prefix
@@ -350,8 +337,8 @@ export class TarArchive implements Iterable<TarEntry> {
                 );
             }
             if (
-                header.typeflag !== CHARDEV_TYPE &&
-                header.typeflag !== BLOCKDEV_TYPE
+                header.typeflag !== TarEntryType.chardev &&
+                header.typeflag !== TarEntryType.blockdev
             ) {
                 header.devmajor = header.devminor = undefined;
             }
