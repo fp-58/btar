@@ -2,13 +2,12 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"type": "shell",
-			"command": "${workspaceFolder}/scripts/build.sh",
-			"windows": {
-				"command": "${workspaceFolder}\\scripts\\build.bat"
-			},
+			"type": "npm",
+			"script": "build",
 			"group": "build",
-			"label": "build"
+			"problemMatcher": [],
+			"label": "npm: build",
+			"detail": "echo '=> build' && npm run compile && npm run minify"
 		}
 	]
 }
