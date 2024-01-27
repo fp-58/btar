@@ -128,3 +128,9 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Compiled javascript
+/lib/
+
+# Compiled type definitions
+/types/

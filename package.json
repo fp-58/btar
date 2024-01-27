@@ -6,7 +6,13 @@
     "types": "./types/index.d.ts",
     "devDependencies": {
         "rollup": "^4.9.4",
+        "run-script-os": "^1.1.6",
         "terser": "^5.26.0",
         "typescript": "^5.3.3"
+    },
+    "scripts": {
+        "prepare": "run-script-os",
+        "prepare:win32": "./scripts/build.bat",
+        "prepare:nix": "./scripts/build.sh"
     }
 }
