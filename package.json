@@ -18,7 +18,7 @@
         "compile:dts": "echo '=> compile:dts' && tsc --emitDeclarationOnly",
         "rollup": "echo '=> rollup' && rollup lib/esmodule.js -o lib/index.js -f umd -n btar -m --sourcemapExcludeSources",
         "minify": "echo '=> minify' && npm run minify:esmodule && npm run minify:index",
-        "minify:esmodule": "echo '=> minify:esmodule' && terser lib/esmodule.js --config-file terser/esmodule.json -o lib/esmodule.min.js",
+        "minify:esmodule": "echo '=> minify:esmodule' && rollup lib/esmodule.js -f es | terser --config-file terser/esmodule.json -o lib/esmodule.min.js",
         "minify:index": "echo '=> minify:index' && terser lib/index.js --config-file terser/index.json -o lib/index.min.js"
     }
 }
