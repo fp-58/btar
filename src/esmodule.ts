@@ -1,11 +1,6 @@
-import {
-    BLOCK_SIZE,
-    MAX_TIMESTAMP,
-    TarDefaults,
-    TarEntryType,
-} from "./constants.js";
-import { decodeString, decodeOctal, writeString, writeOctal } from "./io.js";
-import { generateChecksum } from "./utils.js";
+import { BLOCK_SIZE, TarDefaults, TarEntryType } from "./constants.js";
+import { decodeString, decodeOctal } from "./io.js";
+import { tarHeader, TarHeader, writeHeader } from "./tarHeader.js";
 import { normalizePath, splitFilename, isZeroed } from "./utils.js";
 
 export class TarArchive implements Iterable<TarEntry> {
@@ -470,112 +465,9 @@ export class TarArchive implements Iterable<TarEntry> {
     }
 }
 
-function tarHeader(
-    name: string,
-    mode: number,
-    uid: number,
-    gid: number,
-    size: number,
-    lastModified: number,
-    checksum: number | undefined,
-    typeflag: number,
-    linkname: string,
-    version: number,
-    uname: string,
-    gname: string,
-    devmajor: number | undefined,
-    devminor: number | undefined,
-    prefix: string
-): TarHeader {
-    lastModified = Math.floor(lastModified / 1000);
-    if (lastModified > MAX_TIMESTAMP) {
-        lastModified = MAX_TIMESTAMP;
-    }
-
-    const header: TarHeader = {
-        name,
-        mode,
-        uid,
-        gid,
-        size,
-        lastModified,
-        checksum: checksum ?? 0,
-        typeflag,
-        linkname,
-        version,
-        uname,
-        gname,
-        devmajor,
-        devminor,
-        prefix,
-    };
-
-    if (checksum === undefined) {
-        const bytes = new Uint8Array(500);
-        writeHeader(header, bytes);
-
-        // Up to 7 octal numbers, 3 bits per number.
-        const precision = 7 * 3;
-        header.checksum = generateChecksum(bytes, precision);
-    }
-
-    return header;
-}
-
-function writeHeader(
-    header: TarHeader,
-    output: Uint8Array,
-    offset: number = 0
-): void {
-    output = output.subarray(offset, offset + 500);
-    writeString(header.name, output, 0x000, 100);
-    writeOctal(header.mode, output, 0x064, 8);
-    writeOctal(header.uid, output, 0x06c, 8);
-    writeOctal(header.gid, output, 0x074, 8);
-    writeOctal(header.size, output, 0x07c, 12);
-    writeOctal(header.lastModified, output, 0x088, 12);
-    writeOctal(header.checksum, output, 0x094, 7);
-    output[0x9b] = 0x20;
-    writeOctal(header.typeflag, output, 0x09c, 1);
-    writeString(header.linkname, output, 0x09d, 100);
-    writeString("ustar", output, 0x101, 6);
-    writeOctal(header.version & 0o77, output, 0x107, 3);
-    writeString(header.uname, output, 0x109, 32);
-    writeString(header.gname, output, 0x129, 32);
-    if (header.devmajor === undefined) {
-        output.fill(0x00, 0x149, 0x149 + 8);
-    } else {
-        writeOctal(header.devmajor, output, 0x149, 8);
-    }
-    if (header.devminor === undefined) {
-        output.fill(0x00, 0x151, 0x151 + 8);
-    } else {
-        writeOctal(header.devminor, output, 0x151, 8);
-    }
-    writeString(header.prefix, output, 0x159, 155);
-}
-
 export interface TarEntry {
     header: TarHeader;
     content?: File;
-}
-
-export interface TarHeader {
-    name: string;
-    mode: number;
-    uid: number;
-    gid: number;
-    size: number;
-    lastModified: number;
-    checksum: number;
-    typeflag: number;
-    linkname: string;
-    version: number;
-    uname: string;
-    gname: string;
-    devmajor?: number;
-    devminor?: number;
-    prefix: string;
 }
 
 export interface TarPermissionOptions {
