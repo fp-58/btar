@@ -12,3 +12,7 @@
 
 # Sourcemaps
 *.js.map
+
+# Prettier files
+.prettierignore
+.prettierrc
