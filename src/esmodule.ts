@@ -4,6 +4,7 @@ import {
     TarDefaults,
     TarEntryType,
 } from "./constants.js";
+import { decodeString, decodeOctal, writeString, writeOctal } from "./io.js";
 import { generateChecksum } from "./utils.js";
 import { normalizePath, splitFilename, isZeroed } from "./utils.js";
 
@@ -552,82 +553,6 @@ function writeHeader(
         writeOctal(header.devminor, output, 0x151, 8);
     }
     writeString(header.prefix, output, 0x159, 155);
-}
-
-/** Writes a null-terminated string to a Uint8Array. */
-function writeString(
-    value: string,
-    output: Uint8Array,
-    offset: number = 0,
-    length: number = output.length - offset
-): void {
-    output = output.subarray(offset, offset + length);
-    const written = new TextEncoder().encodeInto(value, output).written;
-    if (written < length) {
-        output[written] = 0x00;
-    }
-}
-
-/** Writes a null-terminated octal string to a Uint8Array. */
-function writeOctal(
-    value: number,
-    output: Uint8Array,
-    offset: number = 0,
-    length: number = output.length - offset
-): void {
-    const octalLength = Math.max(1, Math.ceil(Math.log2(value) / 3));
-
-    if (octalLength < length) {
-        length--;
-        output[offset + length] = 0x00;
-    }
-
-    for (let i = offset + length - 1; i >= offset; i--) {
-        const charcode = 0x30 + (value & 7);
-        value >>= 3;
-        output[i] = charcode;
-    }
-}
-
-/** Decodes a null-terminated string from an array of bytes. */
-function decodeString(
-    bytes: Uint8Array,
-    offset: number = 0,
-    length: number = bytes.length - offset
-): string {
-    bytes = new Uint8Array(bytes, offset, length);
-
-    const decoder = new TextDecoder();
-    for (let i = 0; i < length; i++) {
-        if (bytes[i] === 0) {
-            bytes = bytes.subarray(0, i);
-            break;
-        }
-    }
-    return decoder.decode(bytes);
-}
-
-/** Parses a null-terminated octal string from an array of bytes. */
-function decodeOctal(
-    bytes: Uint8Array,
-    offset: number,
-    length: number
-): number {
-    bytes = new Uint8Array(bytes, offset, length);
-
-    let value = 0;
-    for (const byte of bytes) {
-        if (byte === 0) {
-            break;
-        }
-
-        value <<= 3;
-        if (byte < 0x31 || 0x37 < byte) {
-            continue;
-        }
-        value |= byte - 0x30;
-    }
-    return value;
 }
 
 export interface TarEntry {
